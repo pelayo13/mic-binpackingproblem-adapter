@@ -1,0 +1,577 @@
+openapi: 3.0.3
+info:
+  title: bpp-adapter API REST
+  version: 1.0.0
+  description: >
+    ## Bin packing problem adapter API REST
+servers:
+  - url: http://localhost:8081
+    description: Localhost
+tags:
+  - name: bppInstance
+    description: Endpoint for bpp instance.
+  - name: bppSolution
+    description: Endpoint for bpp solution.
+paths:
+  /api/v1/bpp-instances:
+    post:
+      tags:
+        - BppInstance
+      summary: CreateByFiles
+      description: |-
+        Create a bpp instance using the file provided, one bpp instance per file; that created instance is not persisted
+      operationId: CreateByFiles
+      parameters: [
+        {
+          "name": 'Accept-Language',
+          "in": "header",
+          "description": "Indicates the natural language and locale that the client prefers",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - files
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: 'Bin packing problem instances'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateByFilesResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+  /api/v1/bpp-solutions:
+    post:
+      tags:
+        - BppSolution
+      summary: CreateByBppSolvableInstances
+      description: |-
+        Solve each instance and return the solution for it; that created solution is not persisted
+      operationId: CreateByBppSolvableInstances
+      parameters: [
+        {
+          "name": 'Accept-Language',
+          "in": "header",
+          "description": "Indicates the natural language and locale that the client prefers",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+      requestBody:
+        description: Bpp solvable instance, which contains the solving and local seach algorithms that will be applied to each instance
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateByBppSolvableInstancesRequest'
+        required: true
+      responses:
+        '200':
+          description: 'Bin packing problem solutions'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateByBppSolvableInstancesResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+  /api/v1/bpp-detailed-solutions:
+    post:
+      tags:
+        - BppSolution
+      summary: CreateBppDetailedSolutionByBppSolvableInstances
+      description: |-
+        Solve each instance and return the solution for it; that created solution is not persisted
+      operationId: CreateBppDetailedSolutionByBppSolvableInstances
+      parameters: [
+        {
+          "name": 'Accept-Language',
+          "in": "header",
+          "description": "Indicates the natural language and locale that the client prefers",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+      requestBody:
+        description: Bpp solvable instance, which contains the solving and local seach algorithms that will be applied to each instance
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBppDetailedSolutionsByBppSolvableInstancesRequest'
+        required: true
+      responses:
+        '200':
+          description: 'Bin packing problem solutions'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBppDetailedSolutionsByBppSolvableInstancesResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+  /api/v1/bpp-test-instance-results:
+    post:
+      tags:
+        - BppTestInstanceResults
+      summary: CreateByBppTestInstance
+      description: |-
+        Obtain the test results of the test instance that allow algorithm comparisons; that created test results are not persisted
+      operationId: CreateByBppTestInstance
+      parameters: [
+        {
+          "name": 'Accept-Language',
+          "in": "header",
+          "description": "Indicates the natural language and locale that the client prefers",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+      requestBody:
+        description: Bpp test instance, which contains the the characteristics of the tests
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateByBppTestInstancesRequest'
+        required: true
+      responses:
+        '200':
+          description: 'Bin packing problem test results'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateByBppTestInstancesResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+components:
+  schemas:
+    CreateByBppTestInstancesRequest:
+      description: 'Request that contains the data needed to know the instances that have to be performed to be tested'
+      type: object
+      required:
+        - testInstance
+      properties:
+        instance:
+          $ref: '#/components/schemas/BppTestInstanceDto'
+    CreateByBppSolvableInstancesRequest:
+      description: 'Request that contains the instances to be solved'
+      type: object
+      required:
+        - instances
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppSolvableInstanceDto'
+    CreateBppDetailedSolutionsByBppSolvableInstancesRequest:
+      description: 'Request that contains the instances to be solved'
+      type: object
+      required:
+        - instances
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppSolvableInstanceDto'
+    CreateByFilesResponse:
+      description: 'Response that contains the instances created using the files and the errors for the instances that could not be created'
+      type: object
+      required:
+        - instances
+        - filesWithErrors
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppInitialInstanceDto'
+        filesWithErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateByFileErrorResponse'
+    CreateByFileErrorResponse:
+      description: 'Response error'
+      allOf:
+        - $ref: '#/components/schemas/RestErrorResponse'
+        - type: object
+          required:
+            - filename
+          properties:
+            filename:
+              type: string
+    CreateByBppSolvableInstancesResponse:
+      description: 'Response that contains the solutions of each instance and the errors for the instances that could not be solved'
+      type: object
+      required:
+        - solutions
+        - instancesWithErrors
+      properties:
+        solutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppSolutionDto'
+        instancesWithErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateByBppSolvableInstancesErrorResponse'
+    CreateByBppSolvableInstancesErrorResponse:
+      description: 'Errors found for each instance that failed'
+      allOf:
+        - $ref: '#/components/schemas/RestErrorResponse'
+        - type: object
+          required:
+            - instancePositionInRequest
+          properties:
+            instancePositionInRequest:
+              type: integer
+              minimum: 0
+    CreateBppDetailedSolutionsByBppSolvableInstancesResponse:
+      description: 'Response that contains the solutions of each instance and the errors for the instances that could not be solved'
+      type: object
+      required:
+        - detailedSolutions
+        - instancesWithErrors
+      properties:
+        detailedSolutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppDetailedSolutionDto'
+        instancesWithErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateBppDetailedSolutionsByBppSolvableInstancesErrorResponse'
+    CreateBppDetailedSolutionsByBppSolvableInstancesErrorResponse:
+      description: 'Errors found for each instance that failed'
+      allOf:
+        - $ref: '#/components/schemas/RestErrorResponse'
+        - type: object
+          required:
+            - instancePositionInRequest
+          properties:
+            instancePositionInRequest:
+              type: integer
+              minimum: 0
+    CreateByBppTestInstancesResponse:
+      description: 'Response that contains the test results'
+      type: object
+      required:
+        - testInstanceResults
+        - testInstancesWithErrors
+      properties:
+        testInstanceResults:
+          $ref: '#/components/schemas/BppTestInstanceResultsDto'
+        testInstancesWithErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateByBppTestInstancesErrorResponse'
+    CreateByBppTestInstancesErrorResponse:
+      description: 'Errors found for each algorithm applied on the test case instance'
+      allOf:
+        - $ref: '#/components/schemas/RestErrorResponse'
+        - type: object
+          required:
+            - algorithm
+          properties:
+            algorithm:
+              $ref: '#/components/schemas/BppAlgorithmDto'
+    RestErrorResponse:
+      description: 'Default error'
+      type: object
+      required:
+        - code
+        - title
+        - detail
+      properties:
+        code:
+          type: integer
+        title:
+          type: string
+        detail:
+          type: string
+    BppBinDto:
+      description: 'Bin where the items have to be stored'
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          description: 'items that the bin has stored inside'
+          type: array
+          items:
+            $ref: '#/components/schemas/BppStoredItemDto'
+    BppItemDto:
+      description: 'Item that has to be stored in a bin filling its capacity'
+      type: object
+      required:
+        - size
+        - dueDate
+      properties:
+        size:
+          type: integer
+          minimum: 0
+        dueDate:
+          description: 'Moment in which the item has to be stored in one of the bins, otherwise, it produces tardiness'
+          type: integer
+          minimum: 0
+    BppInitialInstanceDto:
+      description: 'Instance that contains the items to be stored in the bins of the indicated size'
+      type: object
+      required:
+        - items
+        - binsCapacity
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppItemDto'
+        binsCapacity:
+          type: integer
+          minimum: 0
+    BppSolutionDto:
+      description: 'Solution that contains the bins with all the items placed in each of them'
+      type: object
+      required:
+        - bins
+      properties:
+        bins:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppBinDto'
+    BppDetailedSolutionDto:
+      description: 'Solution that contains the bins with all the items placed in each of them'
+      type: object
+      required:
+        - recordInstances
+      properties:
+        recordInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppInstanceDto'
+    BppStoredItemDto:
+      allOf:
+        - $ref: '#/components/schemas/BppItemDto'
+        - type: object
+          required:
+            - tardiness
+          properties:
+            tardiness:
+              type: integer
+    BppInstanceDto:
+      allOf:
+        - $ref: '#/components/schemas/BppInitialInstanceDto'
+        - type: object
+          required:
+            - bins
+          properties:
+            bins:
+              type: array
+              items:
+                $ref: '#/components/schemas/BppBinDto'
+    BppSolvableInstanceDto:
+      allOf:
+        - $ref: '#/components/schemas/BppInstanceDto'
+        - type: object
+          properties:
+            greedyAlgorithmType:
+              $ref: '#/components/schemas/GreedyAlgorithmTypeDto'
+            localSearchType:
+              $ref: '#/components/schemas/LocalSearchTypeDto'
+    BppTestInstanceDto:
+      description: 'Test instance that contains the data needed to create the instances to be tested'
+      type: object
+      required:
+        - binsCapacity
+        - minItemsSize
+        - maxItemsSize
+        - minItemsDueDate
+        - maxItemsDueDate
+        - numberItems
+        - numberInstances
+        - algorithms
+      properties:
+        binsCapacity:
+          type: integer
+          minimum: 0
+        minItemsSize:
+          type: integer
+          minimum: 0
+        maxItemsSize:
+          type: integer
+          minimum: 0
+        minItemsDueDate:
+          type: integer
+          minimum: 0
+        maxItemsDueDate:
+          type: integer
+          minimum: 0
+        numberItems:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+        numberInstances:
+          type: integer
+          minimum: 0
+        algorithms:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppAlgorithmDto'
+    BppTestInstanceResultsDto:
+      description: 'All the results for the test instance'
+      type: object
+      required:
+        - testItemsResults
+      properties:
+        testItemsResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppTestItemsResultsDto'
+    BppTestItemsResultsDto:
+      description: 'Results for each number of items'
+      type: object
+      required:
+        - numberItems
+        - testResults
+      properties:
+        numberItems:
+          type: integer
+          minimum: 0
+        testResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppTestResultsDto'
+    BppTestResultsDto:
+      description: 'Results for each algorithm applied to the number of items'
+      type: object
+      required:
+        - averageNumberBins
+        - averageTardiness
+        - averageSeconds
+        - algorithm
+        - testCaseResults
+      properties:
+        averageNumberBins:
+          type: number
+          minimum: 0
+        averageTardiness:
+          type: number
+          minimum: 0
+        averageSeconds:
+          type: number
+          minimum: 0
+        algorithm:
+          $ref: '#/components/schemas/BppAlgorithmDto'
+        testCaseResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppTestCaseResultsDto'
+    BppTestCaseResultsDto:
+      description: 'Results for each test up to the total test size'
+      type: object
+      required:
+        - numberBins
+        - averageTardinessStoredItems
+        - seconds
+      properties:
+        numberBins:
+          type: integer
+          minimum: 0
+        averageTardinessStoredItems:
+          type: number
+          minimum: 0
+        seconds:
+          type: number
+          minimum: 0
+    BppAlgorithmDto:
+      description: 'Algorithm to solve the instance'
+      type: object
+      properties:
+        greedyAlgorithmType:
+          $ref: '#/components/schemas/GreedyAlgorithmTypeDto'
+        localSearchType:
+          $ref: '#/components/schemas/LocalSearchTypeDto'
+    GreedyAlgorithmTypeDto:
+      type: string
+      enum:
+        - RANDOM
+        - FIRST_FIT_DECREASING
+        - BEST_FIT_DECREASING
+    LocalSearchTypeDto:
+      type: string
+      enum:
+        - ALVIN_ET_AL

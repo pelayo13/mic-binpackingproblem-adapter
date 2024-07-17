@@ -1,0 +1,10 @@
+bpp-adapter:
+  message:
+    not-found: El mensaje no pudo ser encontrado
+  bpp-instance:
+    error:
+      cannot-read-bpp-file: El fichero no pudo ser leído
+      cannot-parse-bpp-file: El fichero no sigue el formato correcto, error encontrado en la linea {0}
+  bpp-solution:
+    error:
+      err-creating-solution: No se pudo crear las soluciones, ha habido un error llamando a mic-binpackingproblem-core

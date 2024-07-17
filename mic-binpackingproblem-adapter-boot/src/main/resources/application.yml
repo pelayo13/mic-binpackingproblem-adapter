@@ -1,0 +1,16 @@
+server:
+  port: 8081
+grpc:
+  server:
+    port: 8082
+  client:
+    mic-binpackingproblem-core:
+      address: static://localhost:8082
+      negotiation-type: plaintext
+      deadline: 5000
+tfg:
+  mic-bppadapter:
+    message:
+      default-locale: en
+
+
