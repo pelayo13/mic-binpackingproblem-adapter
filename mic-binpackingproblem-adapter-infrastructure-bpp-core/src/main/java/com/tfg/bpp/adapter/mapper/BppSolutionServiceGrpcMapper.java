@@ -5,21 +5,17 @@ import com.tfg.bpp.adapter.model.*;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.ValueMapping;
 import v1.model.BppBinProto;
 import v1.model.BppDetailedSolutionProto;
-import v1.model.BppGreedyAlgorithmTypeProto;
 import v1.model.BppInstanceProto;
 import v1.model.BppItemProto;
-import v1.model.BppLocalSearchTypeProto;
 import v1.model.BppSolutionProto;
 import v1.model.BppSolvableInstanceProto;
 import v1.model.BppStoredItemProto;
 
 @Mapper(
     config = CentralMapperConfig.class,
-    uses = {GrpcMapper.class})
+    uses = {GrpcMapper.class, BppAlgorithmGrpcMapper.class})
 public interface BppSolutionServiceGrpcMapper {
 
   List<BppSolution> toBppSolutions(List<BppSolutionProto.BppSolution> bppSolutionsProto);
@@ -62,24 +58,4 @@ public interface BppSolutionServiceGrpcMapper {
 
   @Mapping(target = ".", source = "item")
   BppStoredItem toBppStoredItem(BppStoredItemProto.BppStoredItem bppStoredItem);
-
-  @ValueMapping(target = "BPP_GREEDY_ALGORITHM_TYPE_RANDOM", source = "RANDOM")
-  @ValueMapping(
-      target = "BPP_GREEDY_ALGORITHM_TYPE_FIRST_FIT_DECREASING",
-      source = "FIRST_FIT_DECREASING")
-  @ValueMapping(
-      target = "BPP_GREEDY_ALGORITHM_TYPE_BEST_FIT_DECREASING",
-      source = "BEST_FIT_DECREASING")
-  @ValueMapping(
-      target = "BPP_GREEDY_ALGORITHM_TYPE_UNSPECIFIED",
-      source = MappingConstants.ANY_REMAINING)
-  BppGreedyAlgorithmTypeProto.BppGreedyAlgorithmType toBppGreedyAlgorithmTypeProto(
-      BppGreedyAlgorithmType bppGreedyAlgorithmType);
-
-  @ValueMapping(target = "BPP_LOCAL_SEARCH_TYPE_ALVIN_ET_AL", source = "ALVIN_ET_AL")
-  @ValueMapping(
-      target = "BPP_LOCAL_SEARCH_TYPE_UNSPECIFIED",
-      source = MappingConstants.ANY_REMAINING)
-  BppLocalSearchTypeProto.BppLocalSearchType toBppLocalSearchTypeProto(
-      BppLocalSearchType bppLocalSearchType);
 }

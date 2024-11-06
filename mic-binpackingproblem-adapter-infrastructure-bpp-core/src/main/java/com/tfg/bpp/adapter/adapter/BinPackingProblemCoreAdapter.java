@@ -8,12 +8,14 @@ import com.tfg.bpp.adapter.model.BppSolution;
 import com.tfg.bpp.adapter.model.BppSolvableInstance;
 import com.tfg.bpp.adapter.model.BppTestInstance;
 import com.tfg.bpp.adapter.model.BppTestInstanceResults;
+import com.tfg.bpp.adapter.model.BppTestResults;
 import com.tfg.bpp.adapter.port.outbound.BinPackingProblemCoreAdapterPort;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import v1.service.CreateBppDetailedSolutionBySolvableInstancesProto;
+import v1.service.CreateByBppInstanceProto;
 import v1.service.CreateByBppTestInstanceProto;
 import v1.service.CreateBySolvableInstancesProto;
 
@@ -73,5 +75,18 @@ public class BinPackingProblemCoreAdapter implements BinPackingProblemCoreAdapte
 
     return this.bppSolutionServiceGrpcMapper.toBppDetailedSolutions(
         createBppDetailedSolutionByBppSolvableInstancesResponse.getDetailedSolutionsList());
+  }
+
+  @Override
+  public List<BppTestResults> createBppTestResultsByBppInstances(List<BppSolvableInstance> instances) {
+    CreateByBppInstanceProto.CreateByBppInstanceResponse createByBppInstanceResponse =
+        this.binPackingProblemCoreGrpcClient.createByBppInstances(
+                CreateByBppInstanceProto.CreateByBppInstanceRequest.newBuilder()
+                .addAllInstances(
+                    this.bppSolutionServiceGrpcMapper.toBppSolvableInstancesProto(instances))
+                .build());
+
+    return this.bppTestInstanceResultsServiceGrpcMapper.toBppTestResultsList(
+            createByBppInstanceResponse.getTestResultsList());
   }
 }

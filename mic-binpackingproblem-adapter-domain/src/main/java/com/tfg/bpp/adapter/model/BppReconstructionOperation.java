@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppSolvableInstance extends BppInstance {
+public class BppReconstructionOperation extends BppNeighborhoodStructureOperation{
 
-  private BppAlgorithm algorithm;
+  private BppGreedyAlgorithmType algorithm;
 }

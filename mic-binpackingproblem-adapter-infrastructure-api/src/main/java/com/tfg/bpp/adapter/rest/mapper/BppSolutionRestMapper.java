@@ -11,7 +11,9 @@ import org.openapitools.model.CreateBppDetailedSolutionsByBppSolvableInstancesRe
 import org.openapitools.model.CreateByBppSolvableInstancesRequest;
 import org.openapitools.model.CreateByBppSolvableInstancesResponse;
 
-@Mapper(config = CentralMapperConfig.class)
+@Mapper(
+    config = CentralMapperConfig.class,
+    uses = {BppAlgorithmRestMapper.class})
 public interface BppSolutionRestMapper {
 
   @Mapping(target = "solvableInstances", source = "instances")

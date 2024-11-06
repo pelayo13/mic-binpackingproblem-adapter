@@ -172,7 +172,7 @@ paths:
   /api/v1/bpp-test-instance-results:
     post:
       tags:
-        - BppTestInstanceResults
+        - BppTests
       summary: CreateByBppTestInstance
       description: |-
         Obtain the test results of the test instance that allow algorithm comparisons; that created test results are not persisted
@@ -219,8 +219,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RestErrorResponse'
+  /api/v1/bpp-test-results:
+    post:
+      tags:
+        - BppTests
+      summary: CreateByBppInstances
+      description: |-
+        Obtain the test results of the test instance that allow algorithm comparisons; that created test results are not persisted
+      operationId: CreateByBppInstances
+      parameters: [
+        {
+          "name": 'Accept-Language',
+          "in": "header",
+          "description": "Indicates the natural language and locale that the client prefers",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+      requestBody:
+        description: Bpp test instance, which contains the the characteristics of the tests
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateByBppInstancesRequest'
+        required: true
+      responses:
+        '200':
+          description: 'Bin packing problem test results'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateByBppInstancesResponse'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestErrorResponse'
 components:
   schemas:
+    CreateByBppInstancesRequest:
+      description: 'Request that contains the data needed to know the instances that have to be performed to be tested'
+      type: object
+      required:
+        - instances
+      properties:
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppSolvableInstanceDto'
     CreateByBppTestInstancesRequest:
       description: 'Request that contains the data needed to know the instances that have to be performed to be tested'
       type: object
@@ -349,6 +409,32 @@ components:
           properties:
             algorithm:
               $ref: '#/components/schemas/BppAlgorithmDto'
+    CreateByBppInstancesResponse:
+      description: 'Response that contains the test results'
+      type: object
+      required:
+        - testResults
+        - instancesWithErrors
+      properties:
+        testResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppTestResultsDto'
+        instancesWithErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateByBppInstancesErrorResponse'
+    CreateByBppInstancesErrorResponse:
+      description: 'Errors found for each instance that failed'
+      allOf:
+        - $ref: '#/components/schemas/RestErrorResponse'
+        - type: object
+          required:
+            - instancePositionInRequest
+          properties:
+            instancePositionInRequest:
+              type: integer
+              minimum: 0
     RestErrorResponse:
       description: 'Default error'
       type: object
@@ -447,10 +533,8 @@ components:
         - $ref: '#/components/schemas/BppInstanceDto'
         - type: object
           properties:
-            greedyAlgorithmType:
-              $ref: '#/components/schemas/GreedyAlgorithmTypeDto'
-            localSearchType:
-              $ref: '#/components/schemas/LocalSearchTypeDto'
+            algorithm:
+              $ref: '#/components/schemas/BppAlgorithmDto'
     BppTestInstanceDto:
       description: 'Test instance that contains the data needed to create the instances to be tested'
       type: object
@@ -519,9 +603,6 @@ components:
       description: 'Results for each algorithm applied to the number of items'
       type: object
       required:
-        - averageNumberBins
-        - averageTardiness
-        - averageSeconds
         - algorithm
         - testCaseResults
       properties:
@@ -531,6 +612,30 @@ components:
         averageTardiness:
           type: number
           minimum: 0
+        averageLateness:
+          type: number
+        averageMaximumLateness:
+          type: number
+        averageAvailableCapacity:
+          type: number
+          minimum: 0
+        averageNumberIterations:
+          type: number
+          minimum: 0
+        averageNumberNeighborsGenerated:
+          type: number
+          minimum: 0
+        averageNumberEvaluatedNeighbors:
+          type: number
+          minimum: 0
+        standardDeviationFitness:
+          type: number
+          minimum: 0
+        averageFitness:
+          type: number
+          minimum: 0
+        bestCaseByFitness:
+          $ref: '#/components/schemas/BppTestCaseResultsDto'
         averageSeconds:
           type: number
           minimum: 0
@@ -543,35 +648,175 @@ components:
     BppTestCaseResultsDto:
       description: 'Results for each test up to the total test size'
       type: object
-      required:
-        - numberBins
-        - averageTardinessStoredItems
-        - seconds
       properties:
         numberBins:
           type: integer
-          minimum: 0
         averageTardinessStoredItems:
           type: number
-          minimum: 0
+        averageLatenessStoredItems:
+          type: number
+        maximumLateness:
+          type: number
+        availableCapacity:
+          type: number
+        numberIterations:
+          type: number
+        numberNeighborsGenerated:
+          type: number
+        numberEvaluatedNeighbors:
+          type: number
+        fitness:
+          type: number
+        evaluationFunctionResultsRecords:
+          type: array
+          items:
+            type: number
         seconds:
           type: number
-          minimum: 0
     BppAlgorithmDto:
       description: 'Algorithm to solve the instance'
       type: object
       properties:
         greedyAlgorithmType:
           $ref: '#/components/schemas/GreedyAlgorithmTypeDto'
-        localSearchType:
-          $ref: '#/components/schemas/LocalSearchTypeDto'
+        localSearchAlgorithm:
+          $ref: '#/components/schemas/LocalSearchAlgorithmDto'
+    LocalSearchAlgorithmDto:
+      description: 'Results for each test up to the total test size'
+      type: object
+      required:
+        - bppNeighborhoodStructures
+        - bppStrategyControl
+        - bppEvaluationFunction
+        - bppStopCriteria
+      properties:
+        bppNeighborhoodStructures:
+          type: array
+          items:
+            $ref: '#/components/schemas/BppNeighborhoodStructureDto'
+        bppStrategyControl:
+          $ref: '#/components/schemas/BppStrategyControlDto'
+        bppEvaluationFunction:
+          $ref: '#/components/schemas/BppEvaluationFunctionDto'
+        bppStopCriteria:
+          $ref: '#/components/schemas/BppStoppingCriteriaDto'
+    BppNeighborhoodStructureDto:
+      description: 'Operation applied to a instance so we can generate neighbors'
+      type: object
+      required:
+        - bppNeighborhoodStructureOperations
+      properties:
+        bppNeighborhoodStructureOperations:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/BppBinsDestructionOperationDto'
+              - $ref: '#/components/schemas/BppReconstructionOperationDto'
+              - $ref: '#/components/schemas/BppStoredItemsAndFreeItemsInterchangeOperationDto'
+              - $ref: '#/components/schemas/BppStoredItemsInterchangeOperationDto'
+    BppNeighborhoodStructureOperationDto:
+      description: 'Operation applied to a instance so we can generate neighbors'
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/BppNeighborhoodStructureOperationTypeDto'
+    BppBinsDestructionOperationDto:
+      description: 'Results for each test up to the total test size'
+      allOf:
+        - $ref: '#/components/schemas/BppNeighborhoodStructureOperationDto'
+        - type: object
+          properties:
+            numberToDestroy:
+              type: number
+              minimum: 1
+            binsSelectionFunction:
+              $ref: '#/components/schemas/BppBinsSelectionFunctionDto'
+    BppReconstructionOperationDto:
+      allOf:
+        - $ref: '#/components/schemas/BppNeighborhoodStructureOperationDto'
+        - type: object
+          properties:
+            algorithm:
+              $ref: '#/components/schemas/GreedyAlgorithmTypeDto'
+    BppStoredItemsAndFreeItemsInterchangeOperationDto:
+      allOf:
+        - $ref: '#/components/schemas/BppNeighborhoodStructureOperationDto'
+        - type: object
+          properties:
+            numberItemsToInterchangeFrom:
+              type: number
+              minimum: 1
+            numberItemsToInterchangeTo:
+              type: number
+              minimum: 1
+            numberInterchanges:
+              type: number
+              minimum: 1
+            itemsFromSelectionFunction:
+              $ref: '#/components/schemas/BppItemsSelectionFunctionDto'
+            itemsInterchangeFunction:
+              $ref: '#/components/schemas/BppItemsInterchangeFunctionDto'
+    BppStoredItemsInterchangeOperationDto:
+      allOf:
+        - $ref: '#/components/schemas/BppNeighborhoodStructureOperationDto'
+        - type: object
+          properties:
+            numberItemsToInterchangeFrom:
+              type: number
+              minimum: 1
+            numberItemsToInterchangeTo:
+              type: number
+              minimum: 1
+            itemsInterchangeFunction:
+              $ref: '#/components/schemas/BppItemsInterchangeFunctionDto'
+    BppStoppingCriteriaDto:
+      description: 'Indicates the conditions needed for the local search algorithm to stop'
+      type: object
+      required:
+        - maxNumberIterations
+      properties:
+        maxNumberIterations:
+          type: number
+          minimum: 1
+    BppNeighborhoodStructureOperationTypeDto:
+      type: string
+      enum:
+        - BINS_DESTRUCTION
+        - RECONSTRUCTION
+        - BINS_INTERCHANGE
+        - STORED_ITEMS_AND_FREE_ITEMS_INTERCHANGE
+        - STORED_ITEMS_INTERCHANGE
+    BppBinsSelectionFunctionDto:
+      type: string
+      enum:
+        - SMALLEST_OCCUPIED_CAPACITY
+    BppItemsSelectionFunctionDto:
+      type: string
+      enum:
+        - BIGGEST_SIZE
+    BppItemsInterchangeFunctionDto:
+      type: string
+      enum:
+        - SIZE
+        - ALWAYS
+    BppStrategyControlDto:
+      type: string
+      enum:
+        - HILL_CLIMBING
+    BppEvaluationFunctionDto:
+      type: string
+      enum:
+        - BINS_NUMBER
+        - TARDINESS
+        - LATENESS
+        - MAXIMUM_LATENESS
+        - AVAILABLE_CAPACITY
+        - FITNESS
     GreedyAlgorithmTypeDto:
       type: string
       enum:
         - RANDOM
         - FIRST_FIT_DECREASING
         - BEST_FIT_DECREASING
-    LocalSearchTypeDto:
-      type: string
-      enum:
-        - ALVIN_ET_AL

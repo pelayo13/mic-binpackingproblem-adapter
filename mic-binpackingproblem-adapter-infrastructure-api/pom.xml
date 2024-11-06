@@ -87,7 +87,7 @@
                                 <useBeanValidation>true</useBeanValidation>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <documentationProvider>springdoc</documentationProvider>
-                                <additionalModelTypeAnnotations>@lombok.AllArgsConstructor;@lombok.NoArgsConstructor;@lombok.Data;@lombok.Builder</additionalModelTypeAnnotations>
+                                <additionalModelTypeAnnotations>@lombok.experimental.SuperBuilder;@lombok.NoArgsConstructor;@lombok.Builder</additionalModelTypeAnnotations>
                             </configOptions>
                         </configuration>
                     </execution>

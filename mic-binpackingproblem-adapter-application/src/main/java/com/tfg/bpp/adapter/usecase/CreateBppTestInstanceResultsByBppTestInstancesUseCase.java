@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CreateBppTestResultsByBppSolvableInstancesUseCase
+public class CreateBppTestInstanceResultsByBppTestInstancesUseCase
     implements CreateBppTestInstanceResultsByBppTestInstanceUseCasePort {
 
   private static final String CLASS_NAME =
-      CreateBppTestResultsByBppSolvableInstancesUseCase.class.getName();
+      CreateBppTestInstanceResultsByBppTestInstancesUseCase.class.getName();
 
   private final BinPackingProblemCoreAdapterPort binPackingProblemCoreAdapterPort;
 

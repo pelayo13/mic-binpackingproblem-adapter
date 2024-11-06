@@ -15,9 +15,6 @@ import org.springframework.stereotype.Service;
 public class CreateBppDetailedSolutionsByBppSolvableInstancesUseCase
     implements CreateBppDetailedSolutionsByBppSolvableInstancesUseCasePort {
 
-  private static final String CLASS_NAME =
-      CreateBppDetailedSolutionsByBppSolvableInstancesUseCase.class.getName();
-
   private final BinPackingProblemCoreAdapterPort binPackingProblemCoreAdapterPort;
 
   @Override
