@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum BppBinsSelectionFunction {
-  SMALLEST_OCCUPIED_CAPACITY
+  SMALLEST_OCCUPIED_CAPACITY,
+  BIGGEST_MAXIMUM_LATENESS
 }

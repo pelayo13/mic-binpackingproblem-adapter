@@ -792,6 +792,7 @@ components:
       type: string
       enum:
         - SMALLEST_OCCUPIED_CAPACITY
+        - BIGGEST_MAXIMUM_LATENESS
     BppItemsSelectionFunctionDto:
       type: string
       enum:
