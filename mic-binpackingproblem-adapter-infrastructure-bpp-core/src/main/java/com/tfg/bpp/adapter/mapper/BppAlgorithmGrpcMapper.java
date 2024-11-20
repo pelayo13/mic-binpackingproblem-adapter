@@ -70,6 +70,7 @@ public interface BppAlgorithmGrpcMapper {
       BppNeighborhoodStructureProto.BppNeighborhoodStructure bppNeighborhoodStructureProto);
 
   @ValueMapping(target = "HILL_CLIMBING", source = "BPP_STRATEGY_CONTROL_HILL_CLIMBING")
+  @ValueMapping(target = "GRADIENT_DESCENT", source = "BPP_STRATEGY_CONTROL_GRADIENT_DESCENT")
   @ValueMapping(target = MappingConstants.NULL, source = "BPP_STRATEGY_CONTROL_UNSPECIFIED")
   @ValueMapping(target = MappingConstants.THROW_EXCEPTION, source = "UNRECOGNIZED")
   BppStrategyControl toBppStrategyControl(
@@ -207,6 +208,7 @@ public interface BppAlgorithmGrpcMapper {
           BppNeighborhoodStructure bppNeighborhoodStructure);
 
   @ValueMapping(target = "BPP_STRATEGY_CONTROL_HILL_CLIMBING", source = "HILL_CLIMBING")
+  @ValueMapping(target = "BPP_STRATEGY_CONTROL_GRADIENT_DESCENT", source = "GRADIENT_DESCENT")
   @ValueMapping(
       target = "BPP_STRATEGY_CONTROL_UNSPECIFIED",
       source = MappingConstants.ANY_REMAINING)

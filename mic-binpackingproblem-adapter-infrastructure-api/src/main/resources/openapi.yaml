@@ -647,6 +647,7 @@ components:
       type: string
       enum:
         - HILL_CLIMBING
+        - GRADIENT_DESCENT
     BppEvaluationFunctionDto:
       description: Function that returns a number which determines the goodness the of solution based on its metrics
       type: string
