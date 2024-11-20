@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BppBin {
 
-  private List<BppStoredItem> items;
+  private List<BppItem> items;
 }

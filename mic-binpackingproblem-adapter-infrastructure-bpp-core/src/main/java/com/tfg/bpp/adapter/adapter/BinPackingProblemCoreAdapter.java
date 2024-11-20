@@ -1,23 +1,25 @@
 package com.tfg.bpp.adapter.adapter;
 
 import com.tfg.bpp.adapter.client.BinPackingProblemCoreGrpcClient;
-import com.tfg.bpp.adapter.mapper.BppSolutionServiceGrpcMapper;
-import com.tfg.bpp.adapter.mapper.BppTestInstanceResultsServiceGrpcMapper;
-import com.tfg.bpp.adapter.model.BppDetailedSolution;
+import com.tfg.bpp.adapter.mapper.BppAlgorithmGrpcMapper;
+import com.tfg.bpp.adapter.mapper.BppAlgorithmServiceGrpcMapper;
+import com.tfg.bpp.adapter.mapper.BppInstanceServiceGrpcMapper;
+import com.tfg.bpp.adapter.mapper.GrpcMapper;
+import com.tfg.bpp.adapter.model.BppAlgorithm;
+import com.tfg.bpp.adapter.model.BppAlgorithmMetrics;
+import com.tfg.bpp.adapter.model.BppInstance;
+import com.tfg.bpp.adapter.model.BppInstanceMetrics;
+import com.tfg.bpp.adapter.model.BppRandomInstancesGenerationParams;
 import com.tfg.bpp.adapter.model.BppSolution;
 import com.tfg.bpp.adapter.model.BppSolvableInstance;
-import com.tfg.bpp.adapter.model.BppTestInstance;
-import com.tfg.bpp.adapter.model.BppTestInstanceResults;
-import com.tfg.bpp.adapter.model.BppTestResults;
 import com.tfg.bpp.adapter.port.outbound.BinPackingProblemCoreAdapterPort;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import v1.service.CreateBppDetailedSolutionBySolvableInstancesProto;
-import v1.service.CreateByBppInstanceProto;
-import v1.service.CreateByBppTestInstanceProto;
-import v1.service.CreateBySolvableInstancesProto;
+import v1.service.CreateBppMetricsByBppInstancesProto;
+import v1.service.CreateBppMetricsByBppRandomInstancesProto;
+import v1.service.CreateBppSolutionsBySolvableInstancesProto;
 
 @Service
 @RequiredArgsConstructor
@@ -26,67 +28,50 @@ public class BinPackingProblemCoreAdapter implements BinPackingProblemCoreAdapte
 
   private final BinPackingProblemCoreGrpcClient binPackingProblemCoreGrpcClient;
 
-  private final BppSolutionServiceGrpcMapper bppSolutionServiceGrpcMapper;
+  private final BppInstanceServiceGrpcMapper bppInstanceServiceGrpcMapper;
 
-  private final BppTestInstanceResultsServiceGrpcMapper bppTestInstanceResultsServiceGrpcMapper;
+  private final BppAlgorithmServiceGrpcMapper bppAlgorithmServiceGrpcMapper;
+
+  private final GrpcMapper grpcMapper;
+
+  private final BppAlgorithmGrpcMapper bppAlgorithmGrpcMapper;
 
   @Override
   public List<BppSolution> createBppSolutionsByBppSolvableInstances(
       List<BppSolvableInstance> instances) {
-    CreateBySolvableInstancesProto.CreateByBppSolvableInstancesResponse
-        createByBppSolvableInstancesResponse =
-            this.binPackingProblemCoreGrpcClient.createByBppSolvableInstances(
-                CreateBySolvableInstancesProto.CreateByBppSolvableInstancesRequest.newBuilder()
+    CreateBppSolutionsBySolvableInstancesProto.CreateBppSolutionsByBppSolvableInstancesResponse
+        response =
+            this.binPackingProblemCoreGrpcClient.createBppSolutionsByBppSolvableInstances(
+                CreateBppSolutionsBySolvableInstancesProto
+                    .CreateBppSolutionsByBppSolvableInstancesRequest.newBuilder()
                     .addAllSolvableInstances(
-                        this.bppSolutionServiceGrpcMapper.toBppSolvableInstancesProto(instances))
+                        this.bppInstanceServiceGrpcMapper.toBppSolvableInstancesProto(instances))
                     .build());
 
-    return this.bppSolutionServiceGrpcMapper.toBppSolutions(
-        createByBppSolvableInstancesResponse.getSolutionsList());
+    return this.bppInstanceServiceGrpcMapper.toBppSolutions(response.getSolutionsList());
   }
 
   @Override
-  public BppTestInstanceResults createBppTestInstanceResultsByBppTestInstance(
-      BppTestInstance bppTestInstance) {
-    CreateByBppTestInstanceProto.CreateByBppTestInstanceResponse createByBppTestInstanceResponse =
-        this.binPackingProblemCoreGrpcClient.createByBppTestInstance(
-            CreateByBppTestInstanceProto.CreateByBppTestInstanceRequest.newBuilder()
-                .setTestInstance(
-                    this.bppTestInstanceResultsServiceGrpcMapper.toBppTestInstanceProto(
-                        bppTestInstance))
-                .build());
+  public List<BppInstanceMetrics> createBppMetricsByBppRandomInstances(
+      BppRandomInstancesGenerationParams bppRandomInstancesGenerationParams) {
+    CreateBppMetricsByBppRandomInstancesProto.CreateBppMetricsByBppRandomInstancesResponse
+        response =
+            this.binPackingProblemCoreGrpcClient.createBppMetricsByBppRandomInstances(
+                this.bppAlgorithmServiceGrpcMapper.toCreateBppMetricsByBppRandomInstancesRequest(
+                    bppRandomInstancesGenerationParams));
 
-    return this.bppTestInstanceResultsServiceGrpcMapper.toBppTestInstanceResults(
-        createByBppTestInstanceResponse.getTestInstanceResults());
+    return this.bppAlgorithmServiceGrpcMapper.toBppInstanceMetricsList(
+        response.getInstancesMetricsList());
   }
 
   @Override
-  public List<BppDetailedSolution> createBppDetailedSolutionsByBppSolvableInstances(
-      List<BppSolvableInstance> instances) {
-    CreateBppDetailedSolutionBySolvableInstancesProto
-            .CreateBppDetailedSolutionByBppSolvableInstancesResponse
-        createBppDetailedSolutionByBppSolvableInstancesResponse =
-            this.binPackingProblemCoreGrpcClient.createBppDetailedSolutionByBppSolvableInstances(
-                CreateBppDetailedSolutionBySolvableInstancesProto
-                    .CreateBppDetailedSolutionByBppSolvableInstancesRequest.newBuilder()
-                    .addAllSolvableInstances(
-                        this.bppSolutionServiceGrpcMapper.toBppSolvableInstancesProto(instances))
-                    .build());
+  public List<BppAlgorithmMetrics> createBppMetricsByBppInstances(
+      List<BppInstance> instances, List<BppAlgorithm> algorithms, Integer numberRepetitions) {
+    CreateBppMetricsByBppInstancesProto.CreateBppMetricsByBppInstancesResponse response =
+        this.binPackingProblemCoreGrpcClient.createBppMetricsByBppInstances(
+                this.bppAlgorithmServiceGrpcMapper.toCreateBppMetricsByBppInstancesRequest(instances, algorithms, numberRepetitions));
 
-    return this.bppSolutionServiceGrpcMapper.toBppDetailedSolutions(
-        createBppDetailedSolutionByBppSolvableInstancesResponse.getDetailedSolutionsList());
-  }
-
-  @Override
-  public List<BppTestResults> createBppTestResultsByBppInstances(List<BppSolvableInstance> instances) {
-    CreateByBppInstanceProto.CreateByBppInstanceResponse createByBppInstanceResponse =
-        this.binPackingProblemCoreGrpcClient.createByBppInstances(
-                CreateByBppInstanceProto.CreateByBppInstanceRequest.newBuilder()
-                .addAllInstances(
-                    this.bppSolutionServiceGrpcMapper.toBppSolvableInstancesProto(instances))
-                .build());
-
-    return this.bppTestInstanceResultsServiceGrpcMapper.toBppTestResultsList(
-            createByBppInstanceResponse.getTestResultsList());
+    return this.bppAlgorithmServiceGrpcMapper.toBppAlgorithmMetricsList(
+        response.getAlgorithmsMetricsList());
   }
 }

@@ -1,26 +1,21 @@
 package com.tfg.bpp.adapter.client;
 
-import v1.service.CreateBppDetailedSolutionBySolvableInstancesProto.CreateBppDetailedSolutionByBppSolvableInstancesRequest;
-import v1.service.CreateBppDetailedSolutionBySolvableInstancesProto.CreateBppDetailedSolutionByBppSolvableInstancesResponse;
-import v1.service.CreateByBppInstanceProto;
-import v1.service.CreateByBppTestInstanceProto.CreateByBppTestInstanceRequest;
-import v1.service.CreateByBppTestInstanceProto.CreateByBppTestInstanceResponse;
-import v1.service.CreateBySolvableInstancesProto.CreateByBppSolvableInstancesRequest;
-import v1.service.CreateBySolvableInstancesProto.CreateByBppSolvableInstancesResponse;
+import v1.service.CreateBppMetricsByBppInstancesProto.CreateBppMetricsByBppInstancesRequest;
+import v1.service.CreateBppMetricsByBppInstancesProto.CreateBppMetricsByBppInstancesResponse;
+import v1.service.CreateBppMetricsByBppRandomInstancesProto.CreateBppMetricsByBppRandomInstancesRequest;
+import v1.service.CreateBppMetricsByBppRandomInstancesProto.CreateBppMetricsByBppRandomInstancesResponse;
+import v1.service.CreateBppSolutionsBySolvableInstancesProto.CreateBppSolutionsByBppSolvableInstancesRequest;
+import v1.service.CreateBppSolutionsBySolvableInstancesProto.CreateBppSolutionsByBppSolvableInstancesResponse;
 
 public interface BinPackingProblemCoreGrpcClient {
 
-  CreateByBppSolvableInstancesResponse createByBppSolvableInstances(
-      CreateByBppSolvableInstancesRequest createByBppSolvableInstancesRequest);
+  CreateBppSolutionsByBppSolvableInstancesResponse createBppSolutionsByBppSolvableInstances(
+      CreateBppSolutionsByBppSolvableInstancesRequest
+          createBppSolutionsByBppSolvableInstancesRequest);
 
-  CreateByBppTestInstanceResponse createByBppTestInstance(
-      CreateByBppTestInstanceRequest createByBppTestInstanceRequest);
+  CreateBppMetricsByBppRandomInstancesResponse createBppMetricsByBppRandomInstances(
+      CreateBppMetricsByBppRandomInstancesRequest createBppMetricsByBppRandomInstancesRequest);
 
-  CreateBppDetailedSolutionByBppSolvableInstancesResponse
-      createBppDetailedSolutionByBppSolvableInstances(
-          CreateBppDetailedSolutionByBppSolvableInstancesRequest
-              createBppDetailedSolutionByBppSolvableInstancesRequest);
-
-  CreateByBppInstanceProto.CreateByBppInstanceResponse createByBppInstances(
-      CreateByBppInstanceProto.CreateByBppInstanceRequest createByBppInstanceRequest);
+  CreateBppMetricsByBppInstancesResponse createBppMetricsByBppInstances(
+      CreateBppMetricsByBppInstancesRequest createBppMetricsByBppInstancesRequest);
 }

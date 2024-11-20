@@ -5,7 +5,9 @@ import com.tfg.bpp.adapter.model.exception.BppInstanceByBppFileException;
 import com.tfg.bpp.adapter.model.exception.ErrorType;
 import com.tfg.bpp.adapter.port.inbound.service.MessageServicePort;
 import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppInstanceByBppFileUseCasePort;
-import com.tfg.bpp.adapter.rest.mapper.BppInstanceRestMapper;
+import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppSolutionsByBppSolvableInstancesUseCasePort;
+import com.tfg.bpp.adapter.rest.mapper.BppInstanceControllerRestMapper;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,10 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.BppInstanceApi;
-import org.openapitools.model.CreateByFileErrorResponse;
+import org.openapitools.model.CreateByFilesErrorResponse;
 import org.openapitools.model.CreateByFilesResponse;
+import org.openapitools.model.CreateSolutionsByBppSolvableInstancesRequest;
+import org.openapitools.model.CreateSolutionsByBppSolvableInstancesResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,9 +33,12 @@ public class BppInstanceController implements BppInstanceApi {
 
   private final CreateBppInstanceByBppFileUseCasePort createBppInstanceByBppFileUseCasePort;
 
+  private final CreateBppSolutionsByBppSolvableInstancesUseCasePort
+          createBppSolutionsByBppSolvableInstancesUseCasePort;
+
   private final MessageServicePort messageServicePort;
 
-  private final BppInstanceRestMapper bppInstanceRestMapper;
+  private final BppInstanceControllerRestMapper bppInstanceControllerRestMapper;
 
   @Override
   public ResponseEntity<CreateByFilesResponse> createByFiles(
@@ -39,14 +46,14 @@ public class BppInstanceController implements BppInstanceApi {
     log.info("[start] {}.createByFiles", CLASS_NAME);
 
     List<BppInstance> bppInstances = new ArrayList<>();
-    List<CreateByFileErrorResponse> createBppInstanceByFileErrorResponses = new ArrayList<>();
+    List<CreateByFilesErrorResponse> createBppInstanceByFileErrorResponses = new ArrayList<>();
 
     files.forEach(
         file -> {
           try {
             bppInstances.add(
                 this.createBppInstanceByBppFileUseCasePort.execute(
-                    this.bppInstanceRestMapper.toCreateBppInstanceByBppFileCommand(
+                    this.bppInstanceControllerRestMapper.toCreateBppInstanceByBppFileCommand(
                         file.getOriginalFilename(), file.getInputStream())));
           } catch (IOException e) {
             log.error(
@@ -55,7 +62,7 @@ public class BppInstanceController implements BppInstanceApi {
                 file.getOriginalFilename(),
                 e);
             createBppInstanceByFileErrorResponses.add(
-                CreateByFileErrorResponse.builder()
+                CreateByFilesErrorResponse.builder()
                     .filename(Objects.requireNonNull(file.getOriginalFilename()))
                     .code(ErrorType.CANNOT_READ_BPP_FILE.getCode())
                     .title(ErrorType.CANNOT_READ_BPP_FILE.getKey())
@@ -66,12 +73,12 @@ public class BppInstanceController implements BppInstanceApi {
                     .build());
           } catch (BppInstanceByBppFileException e) {
             log.error(
-                "{}.createByFiles - Could not get bpp instance by file - filename: {}",
+                "{}.createByFiles - Could not parse bpp instance by file - filename: {}",
                 CLASS_NAME,
                 file.getOriginalFilename(),
                 e);
             createBppInstanceByFileErrorResponses.add(
-                CreateByFileErrorResponse.builder()
+                CreateByFilesErrorResponse.builder()
                     .filename(Objects.requireNonNull(file.getOriginalFilename()))
                     .code(e.getErrorConstant().getCode())
                     .title(e.getErrorConstant().getKey())
@@ -88,8 +95,31 @@ public class BppInstanceController implements BppInstanceApi {
 
     return ResponseEntity.ok(
         CreateByFilesResponse.builder()
-            .instances(this.bppInstanceRestMapper.toBppInitialInstanceDtos(bppInstances))
+            .instances(this.bppInstanceControllerRestMapper.toBppInstanceDtos(bppInstances))
             .filesWithErrors(createBppInstanceByFileErrorResponses)
             .build());
+  }
+
+  @Override
+  public ResponseEntity<CreateSolutionsByBppSolvableInstancesResponse>
+      createSolutionsByBppSolvableInstances(
+          CreateSolutionsByBppSolvableInstancesRequest createByBppSolvableInstancesRequest,
+          String view,
+          String acceptLanguage) {
+    log.info("[start] {}.createSolutionsByBppSolvableInstances", CLASS_NAME);
+
+    CreateBppSolutionsByBppSolvableInstancesUseCasePort
+            .CreateBppSolutionsByBppSolvableInstancesResponse
+        response =
+            this.createBppSolutionsByBppSolvableInstancesUseCasePort.execute(
+                this.bppInstanceControllerRestMapper.toCreateBppSolutionsByBppSolvableInstancesCommand(
+                    createByBppSolvableInstancesRequest));
+
+    log.info("[end] {}.createSolutionsByBppSolvableInstances", CLASS_NAME);
+
+
+
+    return ResponseEntity.ok(
+        this.bppInstanceControllerRestMapper.toCreateSolutionsByBppSolvableInstancesResponse(response, view));
   }
 }

@@ -14,4 +14,6 @@ import java.util.List;
 public class BppSolution {
 
     private List<BppBin> bins;
+
+    private BppDetailsOfSolution details;
 }

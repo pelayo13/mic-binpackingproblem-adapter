@@ -1,22 +1,23 @@
 package com.tfg.bpp.adapter.port.outbound;
 
-import com.tfg.bpp.adapter.model.BppDetailedSolution;
+import com.tfg.bpp.adapter.model.BppAlgorithm;
+import com.tfg.bpp.adapter.model.BppAlgorithmMetrics;
+import com.tfg.bpp.adapter.model.BppInstance;
+import com.tfg.bpp.adapter.model.BppInstanceMetrics;
+import com.tfg.bpp.adapter.model.BppRandomInstancesGenerationParams;
 import com.tfg.bpp.adapter.model.BppSolution;
 import com.tfg.bpp.adapter.model.BppSolvableInstance;
-import com.tfg.bpp.adapter.model.BppTestInstance;
-import com.tfg.bpp.adapter.model.BppTestInstanceResults;
-import com.tfg.bpp.adapter.model.BppTestResults;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 
 public interface BinPackingProblemCoreAdapterPort {
 
-    List<BppSolution> createBppSolutionsByBppSolvableInstances(@NotNull List<BppSolvableInstance> instances);
+  List<BppSolution> createBppSolutionsByBppSolvableInstances(
+      @NotNull List<BppSolvableInstance> instances);
 
-    BppTestInstanceResults createBppTestInstanceResultsByBppTestInstance(@NotNull BppTestInstance bppTestInstance);
+  List<BppInstanceMetrics> createBppMetricsByBppRandomInstances(
+      @NotNull BppRandomInstancesGenerationParams bppRandomInstancesGenerationParams);
 
-    List<BppDetailedSolution> createBppDetailedSolutionsByBppSolvableInstances(@NotNull List<BppSolvableInstance> instances);
-
-    List<BppTestResults> createBppTestResultsByBppInstances(@NotNull List<BppSolvableInstance> instances);
+  List<BppAlgorithmMetrics> createBppMetricsByBppInstances(
+      @NotNull List<BppInstance> instances, @NotNull List<BppAlgorithm> algorithms, Integer numberRepetitions);
 }

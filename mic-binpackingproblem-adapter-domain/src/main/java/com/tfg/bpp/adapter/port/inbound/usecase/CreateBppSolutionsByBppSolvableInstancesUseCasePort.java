@@ -2,7 +2,6 @@ package com.tfg.bpp.adapter.port.inbound.usecase;
 
 import com.tfg.bpp.adapter.model.BppSolution;
 import com.tfg.bpp.adapter.model.BppSolvableInstance;
-import com.tfg.bpp.adapter.model.exception.BppError;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -15,7 +14,8 @@ public interface CreateBppSolutionsByBppSolvableInstancesUseCasePort {
 
   CreateBppSolutionsByBppSolvableInstancesResponse execute(
       @Valid @NotNull
-          CreateBppSolutionsByBppSolvableInstancesCommand createBppSolutionsByBppSolvableInstancesCommand);
+          CreateBppSolutionsByBppSolvableInstancesCommand
+              createBppSolutionsByBppSolvableInstancesCommand);
 
   @Builder
   @Getter
@@ -24,8 +24,6 @@ public interface CreateBppSolutionsByBppSolvableInstancesUseCasePort {
   final class CreateBppSolutionsByBppSolvableInstancesResponse {
 
     @NotNull private final List<BppSolution> solutions;
-
-    @NotNull private final List<BppError<Integer>> bppErrors;
   }
 
   @Builder

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppTestInstance {
+public class BppRandomInstancesGenerationParams {
 
   private int binsCapacity;
 
@@ -24,7 +24,7 @@ public class BppTestInstance {
 
   private List<Integer> numberItems;
 
-  private int numberInstances;
+  private int numberRepetitions;
 
   private List<BppAlgorithm> algorithms;
 }

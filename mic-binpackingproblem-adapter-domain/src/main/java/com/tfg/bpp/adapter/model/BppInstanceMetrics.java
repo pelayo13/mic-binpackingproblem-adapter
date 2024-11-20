@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BppTestItemsResults {
+public class BppInstanceMetrics {
 
   private int numberItems;
 
-  private List<BppTestResults> testResults;
+  private List<BppAlgorithmMetrics> algorithmsMetrics;
 }

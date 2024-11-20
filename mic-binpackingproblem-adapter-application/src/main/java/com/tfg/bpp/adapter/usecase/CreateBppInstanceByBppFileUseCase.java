@@ -4,7 +4,7 @@ import com.tfg.bpp.adapter.model.BppInstance;
 import com.tfg.bpp.adapter.model.BppItem;
 import com.tfg.bpp.adapter.model.exception.BppFileCannotBeParsedException;
 import com.tfg.bpp.adapter.model.exception.BppFileCannotBeReadException;
-
+import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppInstanceByBppFileUseCasePort;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppInstanceByBppFileUseCasePort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +58,10 @@ public class CreateBppInstanceByBppFileUseCase implements CreateBppInstanceByBpp
       throw new BppFileCannotBeReadException("Bpp file line could not be read", e, lineNumber);
     }
 
-    return BppInstance.builder().binsCapacity(binCapacity).items(items).build();
+    return BppInstance.builder()
+        .binsCapacity(binCapacity)
+        .items(items)
+        .build();
   }
 
   private int getBinCapacity(String line, int lineNumber) throws BppFileCannotBeParsedException {

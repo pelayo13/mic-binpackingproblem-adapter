@@ -7,15 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
-import v1.service.BppSolutionServiceGrpc;
-import v1.service.BppTestInstanceResultsServiceGrpc;
-import v1.service.CreateBppDetailedSolutionBySolvableInstancesProto.CreateBppDetailedSolutionByBppSolvableInstancesRequest;
-import v1.service.CreateBppDetailedSolutionBySolvableInstancesProto.CreateBppDetailedSolutionByBppSolvableInstancesResponse;
-import v1.service.CreateByBppInstanceProto;
-import v1.service.CreateByBppTestInstanceProto.CreateByBppTestInstanceRequest;
-import v1.service.CreateByBppTestInstanceProto.CreateByBppTestInstanceResponse;
-import v1.service.CreateBySolvableInstancesProto.CreateByBppSolvableInstancesRequest;
-import v1.service.CreateBySolvableInstancesProto.CreateByBppSolvableInstancesResponse;
+import v1.service.BppAlgorithmServiceGrpc;
+import v1.service.BppInstanceServiceGrpc;
+import v1.service.CreateBppMetricsByBppInstancesProto.CreateBppMetricsByBppInstancesRequest;
+import v1.service.CreateBppMetricsByBppInstancesProto.CreateBppMetricsByBppInstancesResponse;
+import v1.service.CreateBppMetricsByBppRandomInstancesProto.CreateBppMetricsByBppRandomInstancesRequest;
+import v1.service.CreateBppMetricsByBppRandomInstancesProto.CreateBppMetricsByBppRandomInstancesResponse;
+import v1.service.CreateBppSolutionsBySolvableInstancesProto.CreateBppSolutionsByBppSolvableInstancesRequest;
+import v1.service.CreateBppSolutionsBySolvableInstancesProto.CreateBppSolutionsByBppSolvableInstancesResponse;
 
 @Service
 @Slf4j
@@ -25,27 +24,26 @@ public class BinPackingProblemCoreGrpcClientImpl implements BinPackingProblemCor
   private static final String CLASS_NAME = BinPackingProblemCoreGrpcClientImpl.class.getName();
 
   @GrpcClient("mic-binpackingproblem-core")
-  private BppSolutionServiceGrpc.BppSolutionServiceBlockingStub bppSolutionServiceStub;
+  private BppInstanceServiceGrpc.BppInstanceServiceBlockingStub bppInstanceServiceBlockingStub;
 
   @GrpcClient("mic-binpackingproblem-core")
-  private BppTestInstanceResultsServiceGrpc.BppTestInstanceResultsServiceBlockingStub
-      bppTestInstanceResultsServiceStub;
+  private BppAlgorithmServiceGrpc.BppAlgorithmServiceBlockingStub bppAlgorithmServiceBlockingStub;
 
   @Override
-  public CreateByBppSolvableInstancesResponse createByBppSolvableInstances(
-      CreateByBppSolvableInstancesRequest request) {
-    log.info("[start] {}.createByBppSolvableInstances", CLASS_NAME);
+  public CreateBppSolutionsByBppSolvableInstancesResponse createBppSolutionsByBppSolvableInstances(
+      CreateBppSolutionsByBppSolvableInstancesRequest request) {
+    log.info("[start] {}.createBppSolutionsByBppSolvableInstances", CLASS_NAME);
 
     try {
-      CreateByBppSolvableInstancesResponse response =
-          this.bppSolutionServiceStub.createByBppSolvableInstances(request);
+      CreateBppSolutionsByBppSolvableInstancesResponse response =
+          this.bppInstanceServiceBlockingStub.createBppSolutionsByBppSolvableInstances(request);
 
-      log.info("[end] {}.createByBppSolvableInstances", CLASS_NAME);
+      log.info("[end] {}.createBppSolutionsByBppSolvableInstances", CLASS_NAME);
 
       return response;
     } catch (StatusRuntimeException e) {
       log.error(
-          "{}.createByBppSolvableInstances - error calling grpc server - request: {}",
+          "{}.createBppSolutionsByBppSolvableInstances - error calling grpc server - request: {}",
           CLASS_NAME,
           request,
           e);
@@ -57,20 +55,20 @@ public class BinPackingProblemCoreGrpcClientImpl implements BinPackingProblemCor
   }
 
   @Override
-  public CreateByBppTestInstanceResponse createByBppTestInstance(
-      CreateByBppTestInstanceRequest request) {
-    log.info("[start] {}.createByBppTestInstance", CLASS_NAME);
+  public CreateBppMetricsByBppRandomInstancesResponse createBppMetricsByBppRandomInstances(
+      CreateBppMetricsByBppRandomInstancesRequest request) {
+    log.info("[start] {}.createBppMetricsByBppRandomInstances", CLASS_NAME);
 
     try {
-      CreateByBppTestInstanceResponse response =
-          this.bppTestInstanceResultsServiceStub.createByBppTestInstance(request);
+      CreateBppMetricsByBppRandomInstancesResponse response =
+          this.bppAlgorithmServiceBlockingStub.createBppMetricsByBppRandomInstances(request);
 
-      log.info("[end] {}.createByBppTestInstance", CLASS_NAME);
+      log.info("[end] {}.createBppMetricsByBppRandomInstances", CLASS_NAME);
 
       return response;
     } catch (StatusRuntimeException e) {
       log.error(
-          "{}.createByBppTestInstance - error calling grpc server - request: {}",
+          "{}.createBppMetricsByBppRandomInstances - error calling grpc server - request: {}",
           CLASS_NAME,
           request,
           e);
@@ -82,46 +80,20 @@ public class BinPackingProblemCoreGrpcClientImpl implements BinPackingProblemCor
   }
 
   @Override
-  public CreateBppDetailedSolutionByBppSolvableInstancesResponse
-      createBppDetailedSolutionByBppSolvableInstances(
-          CreateBppDetailedSolutionByBppSolvableInstancesRequest request) {
-    log.info("[start] {}.createBppDetailedSolutionByBppSolvableInstances", CLASS_NAME);
+  public CreateBppMetricsByBppInstancesResponse createBppMetricsByBppInstances(
+      CreateBppMetricsByBppInstancesRequest request) {
+    log.info("[start] {}.createBppMetricsByBppInstances", CLASS_NAME);
 
     try {
-      CreateBppDetailedSolutionByBppSolvableInstancesResponse response =
-          this.bppSolutionServiceStub.createBppDetailedSolutionByBppSolvableInstances(request);
+      CreateBppMetricsByBppInstancesResponse response =
+          this.bppAlgorithmServiceBlockingStub.createBppMetricsByBppInstances(request);
 
-      log.info("[end] {}.createBppDetailedSolutionByBppSolvableInstances", CLASS_NAME);
+      log.info("[end] {}.createBppMetricsByBppInstances", CLASS_NAME);
 
       return response;
     } catch (StatusRuntimeException e) {
       log.error(
-          "{}.createBppDetailedSolutionByBppSolvableInstances - error calling grpc server - request: {}",
-          CLASS_NAME,
-          request,
-          e);
-      throw new GrpcException(
-          "There has been an error calling mic-binpackignproblem-core for creating the detailed solutions",
-          e,
-          ErrorType.ERR_CREATING_SOLUTION);
-    }
-  }
-
-  @Override
-  public CreateByBppInstanceProto.CreateByBppInstanceResponse createByBppInstances(
-      CreateByBppInstanceProto.CreateByBppInstanceRequest request) {
-    log.info("[start] {}.createByBppInstances", CLASS_NAME);
-
-    try {
-      CreateByBppInstanceProto.CreateByBppInstanceResponse response =
-          this.bppTestInstanceResultsServiceStub.createByBppInstance(request);
-
-      log.info("[end] {}.createByBppInstances", CLASS_NAME);
-
-      return response;
-    } catch (StatusRuntimeException e) {
-      log.error(
-          "{}.createByBppInstances - error calling grpc server - request: {}",
+          "{}.createBppMetricsByBppInstances - error calling grpc server - request: {}",
           CLASS_NAME,
           request,
           e);

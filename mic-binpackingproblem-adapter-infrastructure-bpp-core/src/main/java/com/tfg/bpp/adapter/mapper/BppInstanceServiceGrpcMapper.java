@@ -3,27 +3,28 @@ package com.tfg.bpp.adapter.mapper;
 import com.tfg.bpp.adapter.config.CentralMapperConfig;
 import com.tfg.bpp.adapter.model.*;
 import java.util.List;
+
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import v1.model.BppBinProto;
-import v1.model.BppDetailedSolutionProto;
+import v1.model.BppDetailsOfSolutionProto;
 import v1.model.BppInstanceProto;
 import v1.model.BppItemProto;
 import v1.model.BppSolutionProto;
 import v1.model.BppSolvableInstanceProto;
-import v1.model.BppStoredItemProto;
 
 @Mapper(
     config = CentralMapperConfig.class,
     uses = {GrpcMapper.class, BppAlgorithmGrpcMapper.class})
-public interface BppSolutionServiceGrpcMapper {
+public interface BppInstanceServiceGrpcMapper {
 
   List<BppSolution> toBppSolutions(List<BppSolutionProto.BppSolution> bppSolutionsProto);
 
-  List<BppDetailedSolution> toBppDetailedSolutions(List<BppDetailedSolutionProto.BppDetailedSolution> bppDetailedSolutionsProto);
-
   @Mapping(target = "recordInstances", source = "recordInstancesList")
-  BppDetailedSolution toBppDetailedSolutions(BppDetailedSolutionProto.BppDetailedSolution bppDetailedSolutionsProto);
+  BppDetailsOfSolution toBppDetailsOfSolution(
+          BppDetailsOfSolutionProto.BppDetailsOfSolution detailsOfSolutionProto);
 
   @Mapping(target = "bins", source = "binsList")
   BppSolution toBppSolution(BppSolutionProto.BppSolution bppSolution);
@@ -39,6 +40,11 @@ public interface BppSolutionServiceGrpcMapper {
   @Mapping(target = "binsList", source = "bins")
   BppInstanceProto.BppInstance toBppInstanceProto(BppSolvableInstance solvableInstance);
 
+  @Named("toBppInstanceProto")
+  @Mapping(target = "itemsList", source = "items")
+  @Mapping(target = "binsList", source = "bins")
+  BppInstanceProto.BppInstance toBppInstanceProto(BppInstance solvableInstance);
+
   @Mapping(target = "items", source = "itemsList")
   @Mapping(target = "bins", source = "binsList")
   BppInstance toBppInstance(BppInstanceProto.BppInstance solvableInstance);
@@ -52,10 +58,4 @@ public interface BppSolutionServiceGrpcMapper {
 
   @Mapping(target = "items", source = "itemsList")
   BppBin toBppBin(BppBinProto.BppBin bppBin);
-
-  @Mapping(target = "item", source = ".")
-  BppStoredItemProto.BppStoredItem toBppStoredItemProto(BppStoredItem bppStoredItem);
-
-  @Mapping(target = ".", source = "item")
-  BppStoredItem toBppStoredItem(BppStoredItemProto.BppStoredItem bppStoredItem);
 }
