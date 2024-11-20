@@ -1,5 +1,7 @@
 package com.tfg.bpp.adapter.port.inbound.usecase;
 
+import com.tfg.bpp.adapter.model.BppAlgorithm;
+import com.tfg.bpp.adapter.model.BppInstance;
 import com.tfg.bpp.adapter.model.BppSolvableInstance;
 import com.tfg.bpp.adapter.model.BppTestResults;
 import com.tfg.bpp.adapter.model.exception.BppError;
@@ -34,6 +36,7 @@ public interface CreateBppTestResultsByBppInstanceUseCasePort {
   @RequiredArgsConstructor
   final class CreateBppTestResultsByBppInstancesCommand {
 
-    @NotNull private final List<BppSolvableInstance> instances;
+    @NotNull private final List<BppInstance> instances;
+    @NotNull private final List<BppAlgorithm> algorithms;
   }
 }

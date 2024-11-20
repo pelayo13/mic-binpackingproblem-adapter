@@ -1,6 +1,7 @@
 package com.tfg.bpp.adapter.mapper;
 
 import com.tfg.bpp.adapter.config.CentralMapperConfig;
+import com.tfg.bpp.adapter.model.BppAlgorithm;
 import com.tfg.bpp.adapter.model.BppBinsDestructionOperation;
 import com.tfg.bpp.adapter.model.BppBinsInterchangeOperation;
 import com.tfg.bpp.adapter.model.BppBinsSelectionFunction;
@@ -21,6 +22,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 import org.mapstruct.ValueMapping;
+import v1.model.BppAlgorithmProto;
 import v1.model.BppBinsDestructionOperationProto;
 import v1.model.BppBinsInterchangeOperationProto;
 import v1.model.BppBinsSelectionFunctionProto;
@@ -37,10 +39,14 @@ import v1.model.BppStoredItemsAndFreeItemsInterchangeOperationProto;
 import v1.model.BppStoredItemsInterchangeOperationProto;
 import v1.model.BppStrategyControlProto;
 
+import java.util.List;
+
 @Mapper(
     config = CentralMapperConfig.class,
     uses = {GrpcMapper.class})
 public interface BppAlgorithmGrpcMapper {
+
+  List<BppAlgorithmProto.BppAlgorithm> toBppAlgorithmsProto(List<BppAlgorithm> bppAlgorithm);
 
   @ValueMapping(target = "RANDOM", source = "BPP_GREEDY_ALGORITHM_TYPE_RANDOM")
   @ValueMapping(

@@ -1,5 +1,6 @@
 package com.tfg.bpp.adapter.usecase;
 
+import com.tfg.bpp.adapter.mapper.BppMetricsMapper;
 import com.tfg.bpp.adapter.model.BppTestInstanceResults;
 import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppTestInstanceResultsByBppTestInstanceUseCasePort;
 import com.tfg.bpp.adapter.port.outbound.BinPackingProblemCoreAdapterPort;
@@ -19,13 +20,16 @@ public class CreateBppTestInstanceResultsByBppTestInstancesUseCase
 
   private final BinPackingProblemCoreAdapterPort binPackingProblemCoreAdapterPort;
 
+  private final BppMetricsMapper bppMetricsMapper;
+
   @Override
   public CreateBppTestInstanceResultsByBppTestInstanceResponse execute(
       CreateBppTestInstanceResultsByBppTestInstanceCommand
           createBppSolutionsByBppSolvableInstancesCommand) {
     BppTestInstanceResults testInstanceResults =
         this.binPackingProblemCoreAdapterPort.createBppTestInstanceResultsByBppTestInstance(
-            createBppSolutionsByBppSolvableInstancesCommand.getBppTestInstance());
+            this.bppMetricsMapper.toBppTestInstance(
+                createBppSolutionsByBppSolvableInstancesCommand));
 
     return CreateBppTestInstanceResultsByBppTestInstanceResponse.builder()
         .testInstanceResults(testInstanceResults)

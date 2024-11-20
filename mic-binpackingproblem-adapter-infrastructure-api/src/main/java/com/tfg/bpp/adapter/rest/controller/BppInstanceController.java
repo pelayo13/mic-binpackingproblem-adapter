@@ -5,7 +5,9 @@ import com.tfg.bpp.adapter.model.exception.BppInstanceByBppFileException;
 import com.tfg.bpp.adapter.model.exception.ErrorType;
 import com.tfg.bpp.adapter.port.inbound.service.MessageServicePort;
 import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppInstanceByBppFileUseCasePort;
+import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppSolutionsByBppSolvableInstancesUseCasePort;
 import com.tfg.bpp.adapter.rest.mapper.BppInstanceRestMapper;
+import com.tfg.bpp.adapter.rest.mapper.BppSolutionRestMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,10 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.api.BppInstanceApi;
-import org.openapitools.model.CreateByFileErrorResponse;
+import org.openapitools.model.CreateByFilesErrorResponse;
 import org.openapitools.model.CreateByFilesResponse;
+import org.openapitools.model.CreateSolutionByBppSolvableInstancesRequest;
+import org.openapitools.model.CreateSolutionByBppSolvableInstancesResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,13 +37,18 @@ public class BppInstanceController implements BppInstanceApi {
 
   private final BppInstanceRestMapper bppInstanceRestMapper;
 
+  private final CreateBppSolutionsByBppSolvableInstancesUseCasePort
+      createBppSolutionsByBppSolvableInstancesUseCasePort;
+
+  private final BppSolutionRestMapper bppSolutionRestMapper;
+
   @Override
   public ResponseEntity<CreateByFilesResponse> createByFiles(
       List<MultipartFile> files, String acceptLanguage) {
     log.info("[start] {}.createByFiles", CLASS_NAME);
 
     List<BppInstance> bppInstances = new ArrayList<>();
-    List<CreateByFileErrorResponse> createBppInstanceByFileErrorResponses = new ArrayList<>();
+    List<CreateByFilesErrorResponse> createBppInstanceByFileErrorResponses = new ArrayList<>();
 
     files.forEach(
         file -> {
@@ -55,7 +64,7 @@ public class BppInstanceController implements BppInstanceApi {
                 file.getOriginalFilename(),
                 e);
             createBppInstanceByFileErrorResponses.add(
-                CreateByFileErrorResponse.builder()
+                CreateByFilesErrorResponse.builder()
                     .filename(Objects.requireNonNull(file.getOriginalFilename()))
                     .code(ErrorType.CANNOT_READ_BPP_FILE.getCode())
                     .title(ErrorType.CANNOT_READ_BPP_FILE.getKey())
@@ -71,7 +80,7 @@ public class BppInstanceController implements BppInstanceApi {
                 file.getOriginalFilename(),
                 e);
             createBppInstanceByFileErrorResponses.add(
-                CreateByFileErrorResponse.builder()
+                CreateByFilesErrorResponse.builder()
                     .filename(Objects.requireNonNull(file.getOriginalFilename()))
                     .code(e.getErrorConstant().getCode())
                     .title(e.getErrorConstant().getKey())
@@ -88,8 +97,29 @@ public class BppInstanceController implements BppInstanceApi {
 
     return ResponseEntity.ok(
         CreateByFilesResponse.builder()
-            .instances(this.bppInstanceRestMapper.toBppInitialInstanceDtos(bppInstances))
+            .instances(this.bppInstanceRestMapper.toBppInstanceDtos(bppInstances))
             .filesWithErrors(createBppInstanceByFileErrorResponses)
             .build());
+  }
+
+  @Override
+  public ResponseEntity<CreateSolutionByBppSolvableInstancesResponse>
+      createSolutionByBppSolvableInstances(
+          CreateSolutionByBppSolvableInstancesRequest createByBppSolvableInstancesRequest,
+          String view,
+          String acceptLanguage) {
+    log.info("[start] {}.createByBppSolvableInstances", CLASS_NAME);
+
+    CreateBppSolutionsByBppSolvableInstancesUseCasePort
+            .CreateBppSolutionsByBppSolvableInstancesResponse
+        response =
+            this.createBppSolutionsByBppSolvableInstancesUseCasePort.execute(
+                this.bppSolutionRestMapper.toCreateBppSolutionsByBppSolvableInstancesCommand(
+                    createByBppSolvableInstancesRequest));
+
+    log.info("[end] {}.createByBppSolvableInstances", CLASS_NAME);
+
+    return ResponseEntity.ok(
+        this.bppSolutionRestMapper.toCreateByBppSolvableInstancesResponse(response));
   }
 }

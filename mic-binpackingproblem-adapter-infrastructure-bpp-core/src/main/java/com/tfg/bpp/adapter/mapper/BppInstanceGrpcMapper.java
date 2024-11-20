@@ -3,8 +3,11 @@ package com.tfg.bpp.adapter.mapper;
 import com.tfg.bpp.adapter.config.CentralMapperConfig;
 import com.tfg.bpp.adapter.model.*;
 import java.util.List;
+
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import v1.model.BppBinProto;
 import v1.model.BppDetailedSolutionProto;
 import v1.model.BppInstanceProto;
@@ -12,12 +15,11 @@ import v1.model.BppItemProto;
 import v1.model.BppSolutionProto;
 import v1.model.BppSolvableInstanceProto;
 import v1.model.BppStoredItemProto;
-import v1.service.CreateByBppInstanceProto;
 
 @Mapper(
     config = CentralMapperConfig.class,
     uses = {GrpcMapper.class, BppAlgorithmGrpcMapper.class})
-public interface BppSolutionServiceGrpcMapper {
+public interface BppInstanceGrpcMapper {
 
   List<BppSolution> toBppSolutions(List<BppSolutionProto.BppSolution> bppSolutionsProto);
 
@@ -41,6 +43,14 @@ public interface BppSolutionServiceGrpcMapper {
   @Mapping(target = "itemsList", source = "items")
   @Mapping(target = "binsList", source = "bins")
   BppInstanceProto.BppInstance toBppInstanceProto(BppSolvableInstance solvableInstance);
+
+  @IterableMapping(qualifiedByName = "toBppInstanceProto")
+  List<BppInstanceProto.BppInstance> toBppInstancesProto(List<BppInstance> instances);
+
+  @Named("toBppInstanceProto")
+  @Mapping(target = "itemsList", source = "items")
+  @Mapping(target = "binsList", source = "bins")
+  BppInstanceProto.BppInstance toBppInstanceProto(BppInstance solvableInstance);
 
   @Mapping(target = "items", source = "itemsList")
   @Mapping(target = "bins", source = "binsList")

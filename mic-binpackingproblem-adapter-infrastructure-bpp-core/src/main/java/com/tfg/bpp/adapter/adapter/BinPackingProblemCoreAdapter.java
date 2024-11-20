@@ -1,9 +1,13 @@
 package com.tfg.bpp.adapter.adapter;
 
 import com.tfg.bpp.adapter.client.BinPackingProblemCoreGrpcClient;
+import com.tfg.bpp.adapter.mapper.BppAlgorithmGrpcMapper;
+import com.tfg.bpp.adapter.mapper.BppInstanceGrpcMapper;
 import com.tfg.bpp.adapter.mapper.BppSolutionServiceGrpcMapper;
 import com.tfg.bpp.adapter.mapper.BppTestInstanceResultsServiceGrpcMapper;
+import com.tfg.bpp.adapter.model.BppAlgorithm;
 import com.tfg.bpp.adapter.model.BppDetailedSolution;
+import com.tfg.bpp.adapter.model.BppInstance;
 import com.tfg.bpp.adapter.model.BppSolution;
 import com.tfg.bpp.adapter.model.BppSolvableInstance;
 import com.tfg.bpp.adapter.model.BppTestInstance;
@@ -27,6 +31,10 @@ public class BinPackingProblemCoreAdapter implements BinPackingProblemCoreAdapte
   private final BinPackingProblemCoreGrpcClient binPackingProblemCoreGrpcClient;
 
   private final BppSolutionServiceGrpcMapper bppSolutionServiceGrpcMapper;
+
+  private final BppInstanceGrpcMapper bppInstanceGrpcMapper;
+
+  private final BppAlgorithmGrpcMapper bppAlgorithmGrpcMapper;
 
   private final BppTestInstanceResultsServiceGrpcMapper bppTestInstanceResultsServiceGrpcMapper;
 
@@ -78,15 +86,16 @@ public class BinPackingProblemCoreAdapter implements BinPackingProblemCoreAdapte
   }
 
   @Override
-  public List<BppTestResults> createBppTestResultsByBppInstances(List<BppSolvableInstance> instances) {
+  public List<BppTestResults> createBppTestResultsByBppInstances(
+      List<BppInstance> instances, List<BppAlgorithm> algorithms) {
     CreateByBppInstanceProto.CreateByBppInstanceResponse createByBppInstanceResponse =
         this.binPackingProblemCoreGrpcClient.createByBppInstances(
-                CreateByBppInstanceProto.CreateByBppInstanceRequest.newBuilder()
-                .addAllInstances(
-                    this.bppSolutionServiceGrpcMapper.toBppSolvableInstancesProto(instances))
+            CreateByBppInstanceProto.CreateByBppInstanceRequest.newBuilder()
+                .addAllInstances(this.bppInstanceGrpcMapper.toBppInstancesProto(instances))
+                .addAllAlgorithms(this.bppAlgorithmGrpcMapper.toBppAlgorithmsProto(algorithms))
                 .build());
 
     return this.bppTestInstanceResultsServiceGrpcMapper.toBppTestResultsList(
-            createByBppInstanceResponse.getTestResultsList());
+        createByBppInstanceResponse.getTestResultsList());
   }
 }

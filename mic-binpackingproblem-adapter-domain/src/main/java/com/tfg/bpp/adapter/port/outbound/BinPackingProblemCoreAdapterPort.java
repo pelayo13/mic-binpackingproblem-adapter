@@ -1,6 +1,8 @@
 package com.tfg.bpp.adapter.port.outbound;
 
+import com.tfg.bpp.adapter.model.BppAlgorithm;
 import com.tfg.bpp.adapter.model.BppDetailedSolution;
+import com.tfg.bpp.adapter.model.BppInstance;
 import com.tfg.bpp.adapter.model.BppSolution;
 import com.tfg.bpp.adapter.model.BppSolvableInstance;
 import com.tfg.bpp.adapter.model.BppTestInstance;
@@ -18,5 +20,5 @@ public interface BinPackingProblemCoreAdapterPort {
 
     List<BppDetailedSolution> createBppDetailedSolutionsByBppSolvableInstances(@NotNull List<BppSolvableInstance> instances);
 
-    List<BppTestResults> createBppTestResultsByBppInstances(@NotNull List<BppSolvableInstance> instances);
+    List<BppTestResults> createBppTestResultsByBppInstances(@NotNull List<BppInstance> instances, @NotNull List<BppAlgorithm> algorithms);
 }

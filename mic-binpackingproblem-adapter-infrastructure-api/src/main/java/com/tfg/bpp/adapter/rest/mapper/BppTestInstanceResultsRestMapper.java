@@ -5,33 +5,30 @@ import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppTestInstanceResultsByBp
 import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppTestInstanceResultsByBppTestInstanceUseCasePort.CreateBppTestInstanceResultsByBppTestInstanceResponse;
 import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppTestResultsByBppInstanceUseCasePort;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.openapitools.model.CreateByBppInstancesRequest;
-import org.openapitools.model.CreateByBppInstancesResponse;
-import org.openapitools.model.CreateByBppTestInstancesRequest;
-import org.openapitools.model.CreateByBppTestInstancesResponse;
+import org.openapitools.model.CreateMetricsByBppInstancesRequest;
+import org.openapitools.model.CreateMetricsByBppInstancesResponse;
+import org.openapitools.model.CreateMetricsByBppRandomInstancesRequest;
+import org.openapitools.model.CreateMetricsByBppRandomInstancesResponse;
 
 @Mapper(
     config = CentralMapperConfig.class,
     uses = {BppAlgorithmRestMapper.class})
 public interface BppTestInstanceResultsRestMapper {
 
-  @Mapping(target = "bppTestInstance", source = "instance")
   CreateBppTestInstanceResultsByBppTestInstanceUseCasePort
           .CreateBppTestInstanceResultsByBppTestInstanceCommand
       toCreateBppTestResultsByBppTestInstanceCommand(
-          CreateByBppTestInstancesRequest createByBppTestInstancesRequest);
+          CreateMetricsByBppRandomInstancesRequest createMetricsByBppRandomInstancesRequest);
 
-  @Mapping(target = "testInstancesWithErrors", source = "bppErrors")
-  CreateByBppTestInstancesResponse toCreateByBppTestInstancesResponse(
+  CreateMetricsByBppRandomInstancesResponse toCreateMetricsByBppRandomInstancesResponse(
       CreateBppTestInstanceResultsByBppTestInstanceResponse
           createBppTestInstanceResultsByBppTestInstanceResponse);
 
   CreateBppTestResultsByBppInstanceUseCasePort.CreateBppTestResultsByBppInstancesCommand
       toCreateBppTestResultsByBppInstancesCommand(
-          CreateByBppInstancesRequest createByBppInstancesRequest);
+          CreateMetricsByBppInstancesRequest createMetricsByBppInstancesRequest);
 
-  CreateByBppInstancesResponse toCreateByBppInstancesResponse(
+  CreateMetricsByBppInstancesResponse toCreateMetricsByBppInstancesResponse(
       CreateBppTestResultsByBppInstanceUseCasePort.CreateBppTestResultsByBppInstancesResponse
           createBppTestResultsByBppInstancesResponse);
 }

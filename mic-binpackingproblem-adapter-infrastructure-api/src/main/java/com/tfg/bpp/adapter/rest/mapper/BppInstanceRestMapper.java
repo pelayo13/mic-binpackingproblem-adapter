@@ -6,7 +6,7 @@ import com.tfg.bpp.adapter.port.inbound.usecase.CreateBppInstanceByBppFileUseCas
 import java.io.InputStream;
 import java.util.List;
 import org.mapstruct.Mapper;
-import org.openapitools.model.BppInitialInstanceDto;
+import org.openapitools.model.BppInstanceDto;
 
 @Mapper(config = CentralMapperConfig.class)
 public interface BppInstanceRestMapper {
@@ -14,7 +14,5 @@ public interface BppInstanceRestMapper {
   CreateBppInstanceByBppFileCommand toCreateBppInstanceByBppFileCommand(
       String filename, InputStream fileData);
 
-  List<BppInitialInstanceDto> toBppInitialInstanceDtos(List<BppInstance> bppInstances);
-
-  BppInitialInstanceDto toBppInitialInstanceDto(BppInstance bppInstance);
+  List<BppInstanceDto> toBppInstanceDtos(List<BppInstance> bppInstances);
 }
